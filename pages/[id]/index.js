@@ -25,6 +25,7 @@ export default function index(props) {
 			<h2>{item.name}</h2>
 			<h2>{item.description}</h2>
 			<h2>{item.artist}</h2>
+			<h2>${item.price}</h2>
 
 			{/* admin editing */}
 			{user &&
