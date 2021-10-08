@@ -19,10 +19,7 @@ export default function Home(props) {
 				<title>Create Next App</title>
 				<link rel='icon' href='/favicon.ico' />
 			</Head>
-
-			<main>
-				<Gallery items={props.items} />
-			</main>
+			<Gallery items={props.items} />
 		</div>
 	);
 }

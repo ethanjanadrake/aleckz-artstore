@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import firebase from '../firebase/clientApp';
 import 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import path from 'path';
 
 const ProgressBar = ({ file, setFile, data, id, originalFileName }) => {
 	const [

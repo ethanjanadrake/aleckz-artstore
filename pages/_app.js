@@ -1,7 +1,15 @@
-import 'tailwindcss/tailwind.css'
+import 'tailwindcss/tailwind.css';
+import CartContextProvider from '../context/cart-context';
+import Layout from '../components/Layout';
 
 function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+	return (
+		<CartContextProvider>
+			<Layout>
+				<Component {...pageProps} />
+			</Layout>
+		</CartContextProvider>
+	);
 }
 
-export default MyApp
+export default MyApp;

@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import firebase from '../../firebase/clientApp';
 import 'firebase/firestore';
 import { useState } from 'react';
@@ -5,10 +6,15 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { AiOutlineEdit, AiFillDelete } from 'react-icons/ai';
 import { GiCancel } from 'react-icons/gi';
 import UploadForm from '../../components/UploadForm';
+import { CartContext } from '../../context/cart-context';
+import { isInCart } from '../../helpers';
 
 export default function index(props) {
-	const item = props.doc;
+	const item = { ...props.doc, id: props.id };
 	console.log(item);
+
+	const { addProduct, cartItems } = useContext(CartContext);
+	console.log(cartItems);
 
 	const [
 		user
@@ -26,6 +32,15 @@ export default function index(props) {
 			<h2>{item.description}</h2>
 			<h2>{item.artist}</h2>
 			<h2>${item.price}</h2>
+
+			<button
+				onClick={() => {
+					addProduct(item);
+				}}
+				className='transition-all bg-blue-300 hover:bg-blue-100 rounded-xl p-4'
+			>
+				{!isInCart(item, cartItems) ? <span>Add to Cart</span> : <span>Add More to Cart</span>}
+			</button>
 
 			{/* admin editing */}
 			{user &&
