@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import firebase from '../../firebase/clientApp';
+import firebase from '../../lib/firebase';
 import 'firebase/firestore';
 import { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -32,15 +32,22 @@ export default function index(props) {
 			<h2>{item.description}</h2>
 			<h2>{item.artist}</h2>
 			<h2>${item.price}</h2>
+			<h2>In Stock: {item.stock || 'Unlimited'}</h2>
 
-			<button
-				onClick={() => {
-					addProduct(item);
-				}}
-				className='transition-all bg-blue-300 hover:bg-blue-100 rounded-xl p-4'
-			>
-				{!isInCart(item, cartItems) ? <span>Add to Cart</span> : <span>Add More to Cart</span>}
-			</button>
+			{!isInCart(item, cartItems) ? (
+				<button
+					onClick={() => {
+						addProduct(item);
+					}}
+					className='transition-all bg-blue-300 hover:bg-blue-100 rounded-xl p-4'
+				>
+					Add to Cart
+				</button>
+			) : (
+				<button className='transition-all bg-gray-200 rounded-xl p-4 cursor-not-allowed'>
+					Edit Quantity in Cart
+				</button>
+			)}
 
 			{/* admin editing */}
 			{user &&

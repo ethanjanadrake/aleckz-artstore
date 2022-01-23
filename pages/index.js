@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import firebase from '../firebase/clientApp';
+import firebase from '../lib/firebase';
 import Gallery from '../components/Gallery';
 import 'firebase/firestore';
 

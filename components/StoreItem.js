@@ -6,7 +6,7 @@ export default function StoreItem(props) {
 	return (
 		<div className='m-5'>
 			<Link href={`/${props.item.id}`}>
-				<a>
+				<a className=''>
 					<img src={item.url} alt={item.name} className='w-full h-auto' />
 				</a>
 			</Link>

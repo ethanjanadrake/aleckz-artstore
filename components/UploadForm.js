@@ -1,5 +1,5 @@
 import ProgressBar from './ProgressBar';
-import firebase from '../firebase/clientApp';
+import firebase from '../lib/firebase';
 import 'firebase/firestore';
 import { useState, useRef } from 'react';
 import path from 'path';
@@ -90,8 +90,11 @@ export default function UploadForm(props) {
 				if (e.target[i].value) {
 					newData[e.target[i].name] = e.target[i].value;
 				}
+				else if (!e.target[i].value && e.target[i].name === 'stock') {
+					delete newData[e.target[i].name];
+				}
 				else {
-					if (e.target[i].name !== 'fileName') {
+					if (e.target[i].name !== 'fileName' && e.target[i].name !== 'stock') {
 						setFileError('One or more fields is empty');
 						return;
 					}
@@ -159,6 +162,7 @@ export default function UploadForm(props) {
 					placeholder='Description'
 					className='transition-all p-3 rounded-xl w-full outline-none focus:ring focus:ring-yellow-300'
 				/>
+
 				<label htmlFor='price' className='p-3'>
 					Price
 				</label>
@@ -180,6 +184,17 @@ export default function UploadForm(props) {
 						className='transition-all p-3 rounded-xl block pl-7 w-full outline-none focus:ring focus:ring-yellow-300'
 					/>
 				</div>
+				<label htmlFor='stock' className='p-3'>
+					Stock &#40;Leave Blank for Unlimited&#41;
+				</label>
+				<input
+					type='text'
+					id='stock'
+					defaultValue={originalData.stock}
+					name='stock'
+					placeholder='Unlimited'
+					className='transition-all p-3 rounded-xl w-full outline-none focus:ring focus:ring-yellow-300'
+				/>
 			</div>
 			<input type='hidden' value={fileName} name='fileName' />
 			<br />

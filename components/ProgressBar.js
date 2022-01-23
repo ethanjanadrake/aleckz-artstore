@@ -1,6 +1,6 @@
 import useStorage from '../hooks/useStorage';
 import { useEffect } from 'react';
-import firebase from '../firebase/clientApp';
+import firebase from '../lib/firebase';
 import 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 

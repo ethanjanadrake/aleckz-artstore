@@ -1,9 +1,9 @@
-import firebase from '../firebase/clientApp';
+import firebase from '../lib/firebase';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 
 const uiConfig = {
 	signInFlow       : 'popup',
-	signInSuccessUrl : '/',
+	signInSuccessUrl : '/user',
 	signInOptions    : [
 		firebase.auth.GoogleAuthProvider.PROVIDER_ID
 	]

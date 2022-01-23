@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import firebase from '../firebase/clientApp';
+import firebase from '../lib/firebase';
 // import uuid from 'react-uuid';
 // import path from 'path';
 

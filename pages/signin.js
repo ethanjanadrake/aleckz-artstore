@@ -1,6 +1,6 @@
 import SignIn from '../components/SignIn';
 import UploadForm from '../components/UploadForm';
-import firebase from '../firebase/clientApp';
+import firebase from '../lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 export default function admin() {
