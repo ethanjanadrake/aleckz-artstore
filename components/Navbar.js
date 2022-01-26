@@ -16,7 +16,7 @@ export default function Navbar() {
 						<a>HOME</a>
 					</Link>
 				</div>
-				{!user || user.uid === 's458jrHiHTZY6wiJUfc8jJ0FR1J3' ? (
+				{!user || user.uid === 's458jrHiHTZY6wiJUfc8jJ0FR1J3' || user.uid === 'Q0XV5ZKvI3VmX3z8hrDPPuGDmYQ2' ? (
 					<div className='px-3'>
 						<Link href='/signin'>
 							<a>LOG IN</a>

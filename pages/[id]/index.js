@@ -51,7 +51,7 @@ export default function index(props) {
 
 			{/* admin editing */}
 			{user &&
-			user.uid === 's458jrHiHTZY6wiJUfc8jJ0FR1J3' && (
+			(user.uid === 's458jrHiHTZY6wiJUfc8jJ0FR1J3' || user.uid === 'Q0XV5ZKvI3VmX3z8hrDPPuGDmYQ2') && (
 				<div>
 					{!editing && (
 						<div>

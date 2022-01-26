@@ -13,7 +13,7 @@ export default function admin() {
 	return (
 		<div>
 			<SignIn />
-			{user && user.uid === 's458jrHiHTZY6wiJUfc8jJ0FR1J3' && <UploadForm />}
+			{user && (user.uid === 's458jrHiHTZY6wiJUfc8jJ0FR1J3' || user.uid === 'Q0XV5ZKvI3VmX3z8hrDPPuGDmYQ2') && <UploadForm />}
 		</div>
 	);
 }
