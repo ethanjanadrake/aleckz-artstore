@@ -85,9 +85,9 @@ exports.createStripeCheckout = functions.https.onCall(async (data) => {
 		payment_method_types        : [
 			'card'
 		],
-		shipping_rates              : [
-			'shr_1JsGH3IpE0dYztBfP5rMDjmx'
-		],
+		// shipping_rates              : [
+		// 	'shr_1JsGH3IpE0dYztBfP5rMDjmx'
+		// ],
 		shipping_address_collection : {
 			allowed_countries : [
 				'US'
