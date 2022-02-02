@@ -5,7 +5,7 @@ export default function StoreItem(props) {
 
 	return (
 		<div className='group transition-all duration-500 p-5 hover:p-0 w-full h-full'>
-			<div className='bg-primary-100 rounded-lg w-full h-full'>
+			<div className='bg-primary-100 rounded-lg w-full h-full shadow-lg'>
 				<Link href={`/${props.item.id}`}>
 					<a className='w-full'>
 						<div className='relative w-full'>

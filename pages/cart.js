@@ -16,7 +16,7 @@ export default function cart() {
 	console.log(cartItems);
 
 	return (
-		<div className='mt-16'>
+		<div className='mt-32 max-w-2xl mx-auto bg-primary-100 p-10 shadow-md sm:rounded-lg font-normal'>
 			{cartItems &&
 				cartItems.map(item => (
 					<div key={item.id} className=''>
@@ -25,26 +25,33 @@ export default function cart() {
 				))}
 
 			{cartItems && (
-				<button
-					onClick={async () => {
-						if (user) {
-						}
-						await createStripeCheckout({
-							items: cartItems.map(item => {
-								return {
-									quantity: item.quantity,
-									id: item.id,
-								};
-							}),
-						}).then(response => {
-							const sessionId = response.data.id;
-							getStripe().then(res => res.redirectToCheckout({ sessionId }));
-						});
-					}}
-					className='w-32 p-3 hover:bg-blue-500 transition-all font-bold block mx-auto bg-blue-300 rounded-lg'
-				>
-					Checkout
-				</button>
+				<>
+					<p className='text-right font-bold mb-10 '>{`Subtotal: $${cartItems
+						.reduce((acc, curr) => {
+							return acc + curr.price * curr.quantity;
+						}, 0)
+						.toFixed(2)}`}</p>
+					<button
+						onClick={async () => {
+							if (user) {
+							}
+							await createStripeCheckout({
+								items: cartItems.map(item => {
+									return {
+										quantity: item.quantity,
+										id: item.id,
+									};
+								}),
+							}).then(response => {
+								const sessionId = response.data.id;
+								getStripe().then(res => res.redirectToCheckout({ sessionId }));
+							});
+						}}
+						className='w-32 p-3 hover:bg-tertiary-200 transition-all font-bold block mx-auto bg-tertiary-400 rounded-lg text-white'
+					>
+						Checkout
+					</button>
+				</>
 			)}
 		</div>
 	);

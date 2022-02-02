@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use strict';
+"use strict";
 
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
 admin.initializeApp();
-const { Logging } = require('@google-cloud/logging');
+const { Logging } = require("@google-cloud/logging");
 const logging = new Logging({
-	projectId : process.env.GCLOUD_PROJECT
+	projectId: process.env.GCLOUD_PROJECT,
 });
 
-const { Stripe } = require('stripe');
+const { Stripe } = require("stripe");
 const stripe = new Stripe(functions.config().stripe.secret, {
-	apiVersion : '2020-08-27'
+	apiVersion: "2020-08-27",
 });
 
 /**
@@ -33,152 +33,167 @@ const stripe = new Stripe(functions.config().stripe.secret, {
  *
  * @see https://stripe.com/docs/payments/save-and-reuse#web-create-customer
  */
-exports.createStripeCustomer = functions.auth.user().onCreate(async (user) => {
+exports.createStripeCustomer = functions.auth.user().onCreate(async user => {
 	const customer = await stripe.customers.create({ email: user.email });
 	const intent = await stripe.setupIntents.create({
-		customer : customer.id
+		customer: customer.id,
 	});
-	await admin.firestore().collection('stripe_customers').doc(user.uid).set({
-		customer_id  : customer.id,
-		setup_secret : intent.client_secret
+	await admin.firestore().collection("stripe_customers").doc(user.uid).set({
+		customer_id: customer.id,
+		setup_secret: intent.client_secret,
 	});
-	await admin.firestore().collection('users').doc(user.uid).set({
-		name  : user.displayName,
-		email : user.email
-	});
-	return;
-});
-
-exports.updateStripeCustomer = functions.firestore.document('/users/{userId}').onUpdate(async (snap, context) => {
-	const data = snap.after.data();
-	delete data.id;
-	console.log({ ...data });
-	const stripeCustomer = await admin
-		.firestore()
-		.collection('stripe_customers')
-		.doc(context.params.userId)
-		.get()
-		.then((doc) => {
-			return doc.data().customer_id;
-		});
-	await stripe.customers.update(stripeCustomer, {
-		...data
+	await admin.firestore().collection("users").doc(user.uid).set({
+		name: user.displayName,
+		email: user.email,
 	});
 	return;
 });
 
-exports.createStripeCheckout = functions.https.onCall(async (data) => {
-	const line_items = await Promise.all(
-		data.items.map(async (item) => {
-			const price = await admin.firestore().collection('art').doc(item.id).get().then((doc) => {
-				return doc.data().price_id;
+exports.updateStripeCustomer = functions.firestore
+	.document("/users/{userId}")
+	.onUpdate(async (snap, context) => {
+		const data = snap.after.data();
+		delete data.id;
+		console.log({ ...data });
+		const stripeCustomer = await admin
+			.firestore()
+			.collection("stripe_customers")
+			.doc(context.params.userId)
+			.get()
+			.then(doc => {
+				return doc.data().customer_id;
 			});
-			console.log('price:', price);
+		await stripe.customers.update(stripeCustomer, {
+			...data,
+		});
+		return;
+	});
+
+exports.createStripeCheckout = functions.https.onCall(async data => {
+	const line_items = await Promise.all(
+		data.items.map(async item => {
+			const price = await admin
+				.firestore()
+				.collection("art")
+				.doc(item.id)
+				.get()
+				.then(doc => {
+					return doc.data().price_id;
+				});
+			console.log("price:", price);
 			return {
-				quantity : item.quantity,
-				price
+				quantity: item.quantity,
+				price,
 			};
 		})
 	);
-	console.log('line_items:', line_items);
+	console.log("line_items:", line_items);
 	const session = await stripe.checkout.sessions.create({
-		payment_method_types        : [
-			'card'
-		],
+		payment_method_types: ["card"],
 		// shipping_rates              : [
 		// 	'shr_1JsGH3IpE0dYztBfP5rMDjmx'
 		// ],
-		shipping_address_collection : {
-			allowed_countries : [
-				'US'
-			]
+		shipping_address_collection: {
+			allowed_countries: ["US"],
 		},
-		mode                        : 'payment',
-		success_url                 : 'http://localhost:3000/success',
-		cancel_url                  : 'http://localhost:3000/cancel',
-		line_items
+		mode: "payment",
+		success_url: "http://wwww.susbut.art/success",
+		cancel_url: "http://www.susbut.art/cancel",
+		line_items,
 	});
 	return {
-		id : session.id
+		id: session.id,
 	};
 });
 
-exports.addStripeProduct = functions.firestore.document('/art/{productId}').onCreate(async (snap, context) => {
-	const data = snap.data();
-	await stripe.products.create({
-		name        : data.name,
-		id          : context.params.productId,
-		description : data.description,
-		images      : [
-			data.url
-		],
-		shippable   : true
-	});
-	const price = await stripe.prices.create({
-		currency    : 'usd',
-		product     : context.params.productId,
-		unit_amount : parseInt(data.price * 100)
-	});
-	await admin.firestore().collection('art').doc(context.params.productId).set({
-		...data,
-		price_id : price.id
-	});
-});
-
-exports.updateStripeProduct = functions.firestore.document('/art/{productId}').onUpdate(async (snap, context) => {
-	const data = snap.after.data();
-	await stripe.products.update(context.params.productId, {
-		name        : data.name,
-		description : data.description,
-		images      : [
-			data.url
-		],
-		shippable   : true
-	});
-	if (snap.before.data().price !== data.price) {
-		await stripe.prices.update(data.price_id, {
-			active : false
+exports.addStripeProduct = functions.firestore
+	.document("/art/{productId}")
+	.onCreate(async (snap, context) => {
+		const data = snap.data();
+		await stripe.products.create({
+			name: data.name,
+			id: context.params.productId,
+			description: data.description,
+			images: [data.url],
+			shippable: true,
 		});
 		const price = await stripe.prices.create({
-			currency    : 'usd',
-			product     : context.params.productId,
-			unit_amount : parseInt(data.price * 100)
+			currency: "usd",
+			product: context.params.productId,
+			unit_amount: parseInt(data.price * 100),
 		});
-		await admin.firestore().collection('art').doc(context.params.productId).set({
-			...data,
-			price_id : price.id
-		});
-	}
-});
+		await admin
+			.firestore()
+			.collection("art")
+			.doc(context.params.productId)
+			.set({
+				...data,
+				price_id: price.id,
+			});
+	});
 
-exports.archiveStripeProduct = functions.firestore.document('/art/{productId}').onDelete(async (snap, context) => {
-	const data = snap.data();
-	await stripe.prices.update(data.price_id, {
-		active : false
+exports.updateStripeProduct = functions.firestore
+	.document("/art/{productId}")
+	.onUpdate(async (snap, context) => {
+		const data = snap.after.data();
+		await stripe.products.update(context.params.productId, {
+			name: data.name,
+			description: data.description,
+			images: [data.url],
+			shippable: true,
+		});
+		if (snap.before.data().price !== data.price) {
+			await stripe.prices.update(data.price_id, {
+				active: false,
+			});
+			const price = await stripe.prices.create({
+				currency: "usd",
+				product: context.params.productId,
+				unit_amount: parseInt(data.price * 100),
+			});
+			await admin
+				.firestore()
+				.collection("art")
+				.doc(context.params.productId)
+				.set({
+					...data,
+					price_id: price.id,
+				});
+		}
 	});
-	await stripe.products.update(context.params.productId, {
-		active : false
+
+exports.archiveStripeProduct = functions.firestore
+	.document("/art/{productId}")
+	.onDelete(async (snap, context) => {
+		const data = snap.data();
+		await stripe.prices.update(data.price_id, {
+			active: false,
+		});
+		await stripe.products.update(context.params.productId, {
+			active: false,
+		});
 	});
-});
 
 /**
  * When adding the payment method ID on the client,
  * this function is triggered to retrieve the payment method details.
  */
 exports.addPaymentMethodDetails = functions.firestore
-	.document('/stripe_customers/{userId}/payment_methods/{pushId}')
+	.document("/stripe_customers/{userId}/payment_methods/{pushId}")
 	.onCreate(async (snap, context) => {
 		try {
 			const paymentMethodId = snap.data().id;
-			const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
+			const paymentMethod = await stripe.paymentMethods.retrieve(
+				paymentMethodId
+			);
 			await snap.ref.set(paymentMethod);
 			// Create a new SetupIntent so the customer can add a new method next time.
 			const intent = await stripe.setupIntents.create({
-				customer : `${paymentMethod.customer}`
+				customer: `${paymentMethod.customer}`,
 			});
 			await snap.ref.parent.parent.set(
 				{
-					setup_secret : intent.client_secret
+					setup_secret: intent.client_secret,
 				},
 				{ merge: true }
 			);
@@ -199,7 +214,7 @@ exports.addPaymentMethodDetails = functions.firestore
 // [START chargecustomer]
 
 exports.createStripePayment = functions.firestore
-	.document('stripe_customers/{userId}/payments/{pushId}')
+	.document("stripe_customers/{userId}/payments/{pushId}")
 	.onCreate(async (snap, context) => {
 		const { amount, currency, payment_method } = snap.data();
 		try {
@@ -214,9 +229,9 @@ exports.createStripePayment = functions.firestore
 					currency,
 					customer,
 					payment_method,
-					off_session         : false,
-					confirm             : true,
-					confirmation_method : 'manual'
+					off_session: false,
+					confirm: true,
+					confirmation_method: "manual",
 				},
 				{ idempotencyKey }
 			);
@@ -240,10 +255,12 @@ exports.createStripePayment = functions.firestore
  * @see https://stripe.com/docs/payments/accept-a-payment-synchronously#web-confirm-payment
  */
 exports.confirmStripePayment = functions.firestore
-	.document('stripe_customers/{userId}/payments/{pushId}')
+	.document("stripe_customers/{userId}/payments/{pushId}")
 	.onUpdate(async (change, context) => {
-		if (change.after.data().status === 'requires_confirmation') {
-			const payment = await stripe.paymentIntents.confirm(change.after.data().id);
+		if (change.after.data().status === "requires_confirmation") {
+			const payment = await stripe.paymentIntents.confirm(
+				change.after.data().id
+			);
 			change.after.ref.set(payment);
 		}
 	});
@@ -251,16 +268,22 @@ exports.confirmStripePayment = functions.firestore
 /**
  * When a user deletes their account, clean up after them
  */
-exports.cleanupUser = functions.auth.user().onDelete(async (user) => {
-	const dbRef = admin.firestore().collection('stripe_customers');
+exports.cleanupUser = functions.auth.user().onDelete(async user => {
+	const dbRef = admin.firestore().collection("stripe_customers");
 	const customer = (await dbRef.doc(user.uid).get()).data();
 	await stripe.customers.del(customer.customer_id);
 	// Delete the customers payments & payment methods in firestore.
 	const batch = admin.firestore().batch();
-	const paymetsMethodsSnapshot = await dbRef.doc(user.uid).collection('payment_methods').get();
-	paymetsMethodsSnapshot.forEach((snap) => batch.delete(snap.ref));
-	const paymentsSnapshot = await dbRef.doc(user.uid).collection('payments').get();
-	paymentsSnapshot.forEach((snap) => batch.delete(snap.ref));
+	const paymetsMethodsSnapshot = await dbRef
+		.doc(user.uid)
+		.collection("payment_methods")
+		.get();
+	paymetsMethodsSnapshot.forEach(snap => batch.delete(snap.ref));
+	const paymentsSnapshot = await dbRef
+		.doc(user.uid)
+		.collection("payments")
+		.get();
+	paymentsSnapshot.forEach(snap => batch.delete(snap.ref));
 
 	await batch.commit();
 
@@ -280,30 +303,30 @@ function reportError(err, context = {}) {
 	// This is the name of the StackDriver log stream that will receive the log
 	// entry. This name can be any valid log stream name, but must contain "err"
 	// in order for the error to be picked up by StackDriver Error Reporting.
-	const logName = 'errors';
+	const logName = "errors";
 	const log = logging.log(logName);
 
 	// https://cloud.google.com/logging/docs/api/ref_v2beta1/rest/v2beta1/MonitoredResource
 	const metadata = {
-		resource : {
-			type   : 'cloud_function',
-			labels : { function_name: process.env.FUNCTION_NAME }
-		}
+		resource: {
+			type: "cloud_function",
+			labels: { function_name: process.env.FUNCTION_NAME },
+		},
 	};
 
 	// https://cloud.google.com/error-reporting/reference/rest/v1beta1/ErrorEvent
 	const errorEvent = {
-		message        : err.stack,
-		serviceContext : {
-			service      : process.env.FUNCTION_NAME,
-			resourceType : 'cloud_function'
+		message: err.stack,
+		serviceContext: {
+			service: process.env.FUNCTION_NAME,
+			resourceType: "cloud_function",
 		},
-		context        : context
+		context: context,
 	};
 
 	// Write the error log entry
 	return new Promise((resolve, reject) => {
-		log.write(log.entry(metadata, errorEvent), (error) => {
+		log.write(log.entry(metadata, errorEvent), error => {
 			if (error) {
 				return reject(error);
 			}
@@ -318,5 +341,7 @@ function reportError(err, context = {}) {
  * Sanitize the error message for the user.
  */
 function userFacingMessage(error) {
-	return error.type ? error.message : 'An error occurred, developers have been alerted';
+	return error.type
+		? error.message
+		: "An error occurred, developers have been alerted";
 }

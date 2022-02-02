@@ -1,9 +1,9 @@
-import SignIn from "../components/SignIn";
+import UploadForm from "../components/UploadForm";
 
 export default function admin() {
 	return (
 		<div className='mt-32'>
-			<SignIn />
+			<UploadForm />
 		</div>
 	);
 }
