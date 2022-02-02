@@ -1,44 +1,47 @@
-import CartIcon from './CartIcon';
-import firebase from '../lib/firebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import Link from 'next/link';
+import CartIcon from "./CartIcon";
+import firebase from "../lib/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import Link from "next/link";
+import { useRouter } from "next/router";
+
+function NavLink({ href, name }) {
+	const router = useRouter();
+	return (
+		<Link href={href}>
+			<a
+				className={`px-3 h-full flex items-center transition-all duration-300 hover:bg-secondary-500 ${
+					router.pathname === href && "bg-secondary-500"
+				}`}
+			>
+				{name}
+			</a>
+		</Link>
+	);
+}
 
 export default function Navbar() {
-	const [
-		user
-	] = useAuthState(firebase.auth());
+	const [user] = useAuthState(firebase.auth());
+	const router = useRouter();
 
 	return (
-		<div className='w-full bg-black h-12 flex justify-between text-white'>
-			<div className='flex'>
-				<div className='px-3'>
-					<Link href='/'>
-						<a>HOME</a>
-					</Link>
-				</div>
-				{!user || user.uid === 's458jrHiHTZY6wiJUfc8jJ0FR1J3' || user.uid === 'Q0XV5ZKvI3VmX3z8hrDPPuGDmYQ2' ? (
-					<div className='px-3'>
-						<Link href='/signin'>
-							<a>LOG IN</a>
-						</Link>
-					</div>
+		<div className='fixed z-10 top-0 w-full bg-tertiary-500 font-title h-12 flex justify-between items-center text-primary-100'>
+			<div className='flex items-center h-full'>
+				<NavLink href='/' name='HOME' />
+				{!user ||
+				user.uid === "s458jrHiHTZY6wiJUfc8jJ0FR1J3" ||
+				user.uid === "Q0XV5ZKvI3VmX3z8hrDPPuGDmYQ2" ? (
+					<NavLink href='/signin' name='LOG IN' />
 				) : (
-					<div className='px-3'>
-						<Link href='/signout'>
-							<a>LOG OUT</a>
-						</Link>
-					</div>
+					<NavLink href='/signout' name='LOG OUT' />
 				)}
-				{user && (
-					<div className='px-3'>
-						<Link href={`/user`}>
-							<a>ACCOUNT</a>
-						</Link>
-					</div>
-				)}
+				{user && <NavLink href='/user' name='ACCOUNT' />}
 			</div>
 			<Link href='/cart'>
-				<a>
+				<a
+					className={`transition-all duration-300 hover:text-secondary-100 ${
+						router.pathname === "/cart" && "text-secondary-100"
+					}`}
+				>
 					<CartIcon />
 				</a>
 			</Link>

@@ -1,4 +1,4 @@
-import Head from 'next/head';
+
 import firebase from '../lib/firebase';
 import Gallery from '../components/Gallery';
 import 'firebase/firestore';
@@ -14,13 +14,7 @@ export default function Home(props) {
 	getPaths();
 
 	return (
-		<div>
-			<Head>
-				<title>Create Next App</title>
-				<link rel='icon' href='/favicon.ico' />
-			</Head>
 			<Gallery items={props.items} />
-		</div>
 	);
 }
 

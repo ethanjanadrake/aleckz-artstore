@@ -146,7 +146,7 @@ export default function UploadForm(props) {
 				<input
 					type='text'
 					id='artist'
-					defaultValue={originalData.artist || 'Aleckzander Martisauskas'}
+					defaultValue={originalData.artist || 'Aleckzander Fazekas'}
 					name='artist'
 					placeholder='Artist Name'
 					className='transition-all p-3 rounded-xl w-full outline-none focus:ring focus:ring-yellow-300'
