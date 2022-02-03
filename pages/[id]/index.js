@@ -57,7 +57,8 @@ export default function index(props) {
 			{/* admin editing */}
 			{user &&
 				(user.uid === "s458jrHiHTZY6wiJUfc8jJ0FR1J3" ||
-					user.uid === "Q0XV5ZKvI3VmX3z8hrDPPuGDmYQ2") && (
+					user.uid === "Q0XV5ZKvI3VmX3z8hrDPPuGDmYQ2" ||
+					user.uid === "oL7GsmdbmoePDfw5F2eURa6g17o1") && (
 					<div>
 						{!editing && (
 							<div className='absolute right-20 bottom-0'>
