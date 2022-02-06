@@ -80,6 +80,7 @@ export default function StoreItem(props) {
 						onClick={() => {
 							setQuantity(item, item.quantity + 1);
 						}}
+						className='bg-tertiary-200 p-2 rounded-md font-bold hover:bg-tertiary-100'
 					>
 						+
 					</button>
