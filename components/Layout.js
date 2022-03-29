@@ -28,6 +28,18 @@ export default function Layout({ children }) {
 				<link rel='manifest' href='/site.webmanifest' />
 				<link rel='mask-icon' href='/safari-pinned-tab.svg' color='#5bbad5' />
 				<meta name='theme-color' content='#ffffff' />
+				<meta name='charset' content='UTF-8' />
+				<meta property='og:title' content='Zandart' />
+				<meta
+					property='og:description'
+					content='Drip paintings for sale by Aleckz.'
+				/>
+				<meta property='og:image' content='/socialimage.jpg' />
+				<meta
+					name='keywords'
+					content='drip, painting, paint, painter, sale, store'
+				/>
+				<meta name='author' content='Ethan Jana Drake' />
 				<link rel='preconnect' href='https://fonts.googleapis.com' />
 				<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
 				<link
